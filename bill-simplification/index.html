@@ -1,0 +1,517 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Bill Simplification · Ridhi Malhotra</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column (~68ch) that breaks out to a wide "screen wall" for artefacts; figures read like an itemised bill. */
+:root{
+  --paper:#f6f7fa; --sheet:#ffffff; --ink:#151a2b; --muted:#5b6275; --rule:#dde1ea;
+  --signal:#c8102e; --signal-soft:#fbe8eb; --credit:#1d7a4a; --credit-soft:#e4f3ea; --wall:#eceef4;
+  --display:"Bricolage Grotesque", "Helvetica Neue", Arial, sans-serif;
+  --body:"IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0f121b; --sheet:#171b27; --ink:#e9ebf2; --muted:#9aa1b4; --rule:#2a3040;
+  --signal:#ff5a6e; --signal-soft:#3a1820; --credit:#4cc98a; --credit-soft:#12301f; --wall:#1b2030; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0f121b; --sheet:#171b27; --ink:#e9ebf2; --muted:#9aa1b4; --rule:#2a3040;
+  --signal:#ff5a6e; --signal-soft:#3a1820; --credit:#4cc98a; --credit-soft:#12301f; --wall:#1b2030; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:400 17px/1.65 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));}
+.page{max-width:1120px;margin:0 auto;padding-block:56px 96px;display:flex;flex-direction:column;gap:88px}
+.col{max-width:68ch}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.08;letter-spacing:-.015em}
+h1{font-size:clamp(2.6rem,7vw,5.2rem);font-weight:800}
+h2{font-size:clamp(1.7rem,3.6vw,2.6rem);font-weight:700}
+h3{font-size:1.25rem;font-weight:700;line-height:1.25}
+p{margin:0}
+.eyebrow{font:500 .78rem/1.2 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--signal)}
+.lede{font-size:1.2rem;color:var(--muted);max-width:56ch}
+.stack{display:flex;flex-direction:column;gap:18px}
+.stack-lg{display:flex;flex-direction:column;gap:32px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+ul.ticks{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px}
+ul.ticks li{padding-left:22px;position:relative}
+ul.ticks li::before{content:"";position:absolute;left:2px;top:.72em;width:9px;height:2px;background:var(--signal)}
+a{color:inherit}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:48px;align-items:end}
+.hero-shot{width:100%;max-width:330px;justify-self:end}
+.hero-shot .shot{border:0;background:transparent}
+.hero-text{display:flex;flex-direction:column;gap:22px;min-width:0}
+.meta{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:.93rem;margin:0}
+.meta dt{font:500 .74rem/1.9 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.meta dd{margin:0}
+
+/* receipt */
+.receipt{background:var(--sheet);border:1px solid var(--rule);padding:26px 24px 20px;font-family:var(--mono);font-size:.88rem;
+  position:relative;min-width:0;
+  -webkit-mask:radial-gradient(circle 6px at 50% 100%,#0000 98%,#000) 0 0/16px 100% repeat-x;
+          mask:radial-gradient(circle 6px at 50% 100%,#0000 98%,#000) 0 0/16px 100% repeat-x;padding-bottom:30px}
+.receipt h4{margin:0 0 4px;font:600 .74rem/1.4 var(--mono);text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.row{display:flex;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px dashed var(--rule);font-variant-numeric:tabular-nums}
+.row.total{border-bottom:0;border-top:2px solid var(--ink);margin-top:6px;padding-top:12px;font-weight:600;font-size:1rem}
+.row .neg{color:var(--signal)}
+.receipt small{display:block;color:var(--muted);margin-top:12px;font-size:.74rem;line-height:1.5}
+
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.stat{background:var(--sheet);padding:22px 22px 20px;display:flex;flex-direction:column;gap:6px}
+.stat b{font:700 clamp(1.8rem,4vw,2.6rem)/1 var(--display);letter-spacing:-.02em}
+.stat span{color:var(--muted);font-size:.92rem;line-height:1.4}
+
+/* bars */
+.bars{display:flex;flex-direction:column;gap:12px;background:var(--sheet);border:1px solid var(--rule);padding:22px}
+.bar{display:grid;grid-template-columns:minmax(0,11rem) minmax(0,1fr) 5.5rem;gap:14px;align-items:center;font-size:.92rem}
+.track{height:12px;background:var(--wall);position:relative}
+.fill{position:absolute;inset:0 auto 0 0;background:var(--signal)}
+.bar .num{text-align:right}
+.bars .note{font-size:.8rem;color:var(--muted)}
+
+/* figures */
+figure{margin:0;display:flex;flex-direction:column;gap:10px;min-width:0}
+figcaption{font-size:.86rem;color:var(--muted);max-width:70ch}
+figcaption b{color:var(--ink);font-weight:600}
+.shot{display:block;padding:0;border:1px solid var(--rule);background:var(--wall);cursor:zoom-in;width:100%}
+.shot img{display:block;width:100%;height:auto}
+.shot:focus-visible{outline:3px solid var(--signal);outline-offset:3px}
+.wall{background:var(--wall);padding:clamp(14px,3vw,32px);display:flex;flex-direction:column;gap:14px}
+.wall .shot{border:0;background:transparent}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px;align-items:start}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:start}
+
+/* principles */
+.principles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;counter-reset:p}
+.principle{border-top:2px solid var(--ink);padding-top:14px;display:flex;flex-direction:column;gap:8px}
+.principle p{color:var(--muted);font-size:.96rem}
+
+/* flow */
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font:500 .88rem/1.3 var(--mono)}
+.flow span{padding:8px 12px;border:1px solid var(--rule);background:var(--sheet)}
+.flow i{font-style:normal;color:var(--muted)}
+.flow.after span{border-color:var(--credit);background:var(--credit-soft)}
+.flow.before span{border-color:var(--signal);background:var(--signal-soft)}
+.flowlabel{font:500 .74rem/1 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+
+/* construct card */
+.construct{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.construct>div{background:var(--sheet);padding:24px;display:flex;flex-direction:column;gap:10px}
+.tag{align-self:flex-start;font:500 .72rem/1 var(--mono);text-transform:uppercase;letter-spacing:.1em;padding:6px 8px}
+.tag.was{background:var(--signal-soft);color:var(--signal)}
+.tag.now{background:var(--credit-soft);color:var(--credit)}
+
+/* evolution */
+.evo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.evo figure{background:var(--sheet);border:1px solid var(--rule);padding:16px}
+.evo .shot{border:0}
+.evo h3{font-size:1.08rem}
+
+/* table */
+.tablewrap{overflow-x:auto;border:1px solid var(--rule);background:var(--sheet)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.94rem}
+th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font:500 .74rem/1.3 var(--mono);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+.status{border-left:3px solid var(--signal);padding:14px 18px;background:var(--sheet);font-size:.95rem}
+
+.section-head{display:flex;flex-direction:column;gap:12px}
+hr{border:0;border-top:1px solid var(--rule);margin:0}
+
+/* site nav */
+.topnav{max-width:1120px;margin:0 auto;padding-top:20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font:500 .9rem/1.4 var(--body)}
+.topnav a{text-decoration:none}
+.topnav a:first-child{font-weight:600}
+.topnav a:last-child{color:var(--muted)}
+.topnav a:hover{color:var(--signal)}
+
+/* lightbox */
+dialog{border:0;padding:0;background:transparent;max-width:min(96vw,1400px);max-height:94vh}
+dialog::backdrop{background:rgba(8,10,18,.86)}
+dialog img{display:block;max-width:100%;max-height:88vh;width:auto;height:auto;margin:0 auto}
+dialog p{color:#e9ebf2;font-size:.88rem;text-align:center;padding:10px 12px 0}
+dialog button{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));
+  font:500 .85rem var(--mono);padding:8px 14px;border:1px solid #fff6;background:#0008;color:#fff;cursor:pointer}
+
+@media (max-width:860px){
+  .hero,.grid-2,.construct,.evo,.principles{grid-template-columns:minmax(0,1fr)}
+  .hero-shot{justify-self:start}
+  .grid-3{grid-template-columns:minmax(0,1fr)}
+  .page{gap:64px}
+}
+@media (max-width:560px){
+  .stats{grid-template-columns:minmax(0,1fr)}
+  .bar{grid-template-columns:minmax(0,1fr) 4.6rem}
+  .bar .track{grid-column:1/-1;grid-row:2}
+  body{font-size:16px}
+}
+@media (prefers-reduced-motion:no-preference){.shot img{transition:transform .25s}.shot:hover img{transform:scale(1.01)}}
+</style>
+
+<nav class="topnav" aria-label="Site"><a href="../">Ridhi Malhotra</a><a href="../#projects">← Back to projects</a></nav>
+<main class="page">
+
+  <header class="hero">
+    <div class="hero-text">
+      <p class="eyebrow">Case study · Airtel Thanks app · FY26</p>
+      <h1>Bill Simplification</h1>
+      <p class="lede">Turning a bill that only listed charges into one that explains them, before customers have to call and ask.</p>
+      <dl class="meta">
+        <dt>Role</dt><dd>Head of UX Copy &amp; Content Strategy</dd>
+        <dt>Scope</dt><dd>Product strategy, content design, business construct changes, cross-functional delivery to UAT</dd>
+        <dt>Surfaces</dt><dd>Home and category cards, bill details, estimated bill, roaming, NBA nudges</dd>
+        <dt>Goal</dt><dd>20% fewer billing support contacts in Q4 (Oct–Dec) 2026, towards a 40% programme ambition</dd>
+      </dl>
+    </div>
+    <figure class="hero-shot">
+      <button class="shot" type="button" data-cap="Redesigned Bill Details screen."><img src="img/bill-details.jpg" alt="Redesigned Bill Details screen: total outstanding as the largest element, a due date chip, the late fee stated before it applies, a link to see what changed this month, and a bill breakup with plan rental, subscriptions, one-time charge, international roaming and a roaming waiver"></button>
+      <figcaption><b>The redesigned bill.</b> The amount leads, the late fee is stated before it applies, and every charge, including a waiver, has its own line.</figcaption>
+    </figure>
+  </header>
+
+  <!-- CHALLENGE -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">The challenge</p>
+      <h2>People weren't calling because billing was complex. They were calling because the bill didn't explain itself.</h2>
+    </div>
+    <div class="stats">
+      <div class="stat"><b class="num">28M</b><span>unique billing customers across Postpaid, Wi-Fi and Airtel Black</span></div>
+      <div class="stat"><b class="num">4.5 lakh</b><span>billing interactions with support every month</span></div>
+      <div class="stat"><b class="num">21%</b><span>of all assisted interactions, the second-largest contact reason</span></div>
+    </div>
+    <div class="grid-2">
+      <div class="stack col">
+        <p>The support path had three layers, and the first one failed most often. The app showed charges without saying why they existed. Chat had defined journeys but only resolved some queries. Everything else ended in a call, handled manually.</p>
+        <p>Inside Postpaid alone, the reasons were concentrated. Late fees drove six in ten contacts. That made one charge type the clearest place to start.</p>
+      </div>
+      <div class="bars" role="img" aria-label="Postpaid billing interactions by reason: late fee 60,000; mid-cycle changes 18,000; international roaming 14,000; other 8,000">
+        <p class="flowlabel">Postpaid contacts by reason · monthly</p>
+        <div class="bar"><span>Late fee</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="num">60,000</span></div>
+        <div class="bar"><span>Mid-cycle changes</span><div class="track"><div class="fill" style="width:30%"></div></div><span class="num">18,000</span></div>
+        <div class="bar"><span>Int'l roaming</span><div class="track"><div class="fill" style="width:23.3%"></div></div><span class="num">14,000</span></div>
+        <div class="bar"><span>Other reasons</span><div class="track"><div class="fill" style="width:13.3%"></div></div><span class="num">8,000</span></div>
+        <p class="note">Roaming includes ~2,200 border-area cases: customers charged for roaming without leaving India.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT WAS WRONG -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">The existing experience</p>
+      <h2>A reactive bill. It explained things only after customers were already confused.</h2>
+    </div>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="Existing journey: home, services, Wi-Fi bill and bill breakup screens."><img src="img/existing.jpg" alt="Five screens from the existing Airtel app billing journey, with red warning callouts and a long list of charges" loading="lazy"></button>
+      <figcaption><b>Before.</b> Home, services and Wi-Fi bill screens. Warnings in red, charges listed without reasons, and "Changes this month" buried below the breakup.</figcaption>
+    </div>
+    <ul class="ticks col">
+        <li>Callouts were fear-inducing: "services will be stopped" led the message.</li>
+        <li>Customers found unexpected charges only after the bill was generated.</li>
+        <li>The bill showed charges but not the reason behind them.</li>
+        <li>Explanations existed only for people who went looking.</li>
+        <li>Recurring, one-time and prorated charges looked the same.</li>
+        <li>System terms like "Adjustments" and "Other usage charges" meant nothing to customers.</li>
+      </ul>
+    <figure>
+        <button class="shot" type="button" data-cap="Annotated audit of the current bill breakup."><img src="img/slide-03.jpg" alt="Annotated audit of the old bill breakup: unclear previous dues, unexplained ₹0 lines, misleading discount and adjustments, no tax breakup" loading="lazy"></button>
+        <figcaption><b>Content audit.</b> ₹0 lines with no meaning, a green "Adjustments" row that implied savings that didn't exist, no tax breakup, and a "View PDF" button that named a format instead of an intent.</figcaption>
+    </figure>
+  </section>
+
+  <!-- BENCHMARK + PRINCIPLES -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">Research</p>
+      <h2>15+ apps that people already trust with money showed the same three patterns.</h2>
+      <p>We benchmarked ride-hailing, commerce, food delivery, rentals and logistics apps for how they present a total, disclose changes and use colour.</p>
+    </div>
+    <div class="grid-3">
+      <figure><button class="shot" type="button" data-cap="Highlight the key amount."><img src="img/slide-05.jpg" alt="Benchmark screens where the total payable is the largest element" loading="lazy"></button>
+        <figcaption><b>Highlight the key amount.</b> The total is scanned first; details sit below.</figcaption></figure>
+      <figure><button class="shot" type="button" data-cap="Everything is disclosed upfront."><img src="img/slide-06.jpg" alt="Benchmark order summaries showing fees, discounts and previous payments itemised" loading="lazy"></button>
+        <figcaption><b>Disclose everything upfront.</b> Fees, reversals and changes are itemised, so nothing surprises.</figcaption></figure>
+      <figure><button class="shot" type="button" data-cap="Colour communicates, not celebrates."><img src="img/slide-07.jpg" alt="Benchmark screens using green only for real savings and red for important updates" loading="lazy"></button>
+        <figcaption><b>Colour communicates.</b> Red and green signal real changes, never decoration.</figcaption></figure>
+    </div>
+    <hr>
+    <div class="stack">
+      <p class="eyebrow">Content principles</p>
+      <div class="principles">
+        <div class="principle"><h3>Explain before they ask</h3><p>If we already know why an amount changed, say so upfront instead of making customers search for it.</p></div>
+        <div class="principle"><h3>Lead with what matters</h3><p>Start with what happened and how much it changes the bill. Reveal detail progressively.</p></div>
+        <div class="principle"><h3>Use customers' words</h3><p>Replace internal billing terms with labels people recognise, and attach context to every charge.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ROLE -->
+  <section class="grid-2">
+    <div class="section-head">
+      <p class="eyebrow">My role</p>
+      <h2>Content lead from problem framing to UAT.</h2>
+    </div>
+    <div class="stack">
+      <p>I worked with design and product to simplify billing through content, structure and information hierarchy, and pushed back on the business rules underneath when copy alone couldn't fix the confusion.</p>
+      <div class="flow" aria-label="Delivery lifecycle"><span>Problem framing</span><i>→</i><span>PRDs &amp; use cases</span><i>→</i><span>Design</span><i>→</i><span>Solutioning</span><i>→</i><span>Engineering</span><i>→</i><span>UAT</span></div>
+      <ul class="ticks">
+        <li>Mapped opportunities across the whole journey, not only the bill breakup.</li>
+        <li>Wrote PRDs, use-case matrices and content specs for each billing state.</li>
+        <li>Defined charge categories, hierarchy and the rules for colour and waivers.</li>
+        <li>Challenged constructs like late-fee timing with business and engineering.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- EXPLORATIONS -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">Wireframes &amp; explorations</p>
+      <h2>Five ways to answer "why is my bill this amount?"</h2>
+      <p>Before settling the bill details screen, we tested where the total, the pay action and the explanation for a change should sit, and how loudly a late-fee waiver should speak.</p>
+    </div>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="A: trend graph with the amount on top. B: pay button first, compact header. C: late-fee waiver callout. D: glass summary card with a settings tab. E: trend graph in the overdue state."><img src="img/explorations.jpg" alt="Five bill details explorations labelled A to E, varying the trend graph, pay button position, waiver callout and summary card" loading="lazy"></button>
+      <figcaption><b>Explorations A–E.</b> A: trend graph with the amount on top. B: pay button first, compact header. C: late-fee waiver callout. D: glass summary card with a settings tab. E: trend graph in the overdue state.</figcaption>
+    </div>
+    <ul class="ticks col">
+      <li>Every option leads with the total and a one-line reason for the change, such as "Bill is ₹123 higher than last bill".</li>
+      <li>Trend graphs (A, E) added context but pushed the breakup below the fold.</li>
+      <li>The waiver callout (C) became the pattern carried into the overdue design: the struck-out fee next to ₹0.00.</li>
+    </ul>
+  </section>
+
+  <!-- APPROACH 1 -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">First approach · Due &amp; overdue</p>
+      <h2>Communicate urgency without creating anxiety.</h2>
+      <p>Late fees were the single largest contact reason, so we started with the due and overdue states. Each message moves from what happened, to why, to what the customer can do next.</p>
+    </div>
+    <div class="flow"><span>What happened</span><i>→</i><span>Why it happened</span><i>→</i><span>What you can do next</span></div>
+    <div class="grid-2">
+      <ul class="ticks col">
+        <li>Shortened the NBA card to one amount, one date and one consequence.</li>
+        <li>Showed the post-due amount in the bill header, so the fee was visible before it applied.</li>
+        <li>Replaced warning-led copy with informative messages.</li>
+        <li>Surfaced waiver eligibility upfront for eligible customers.</li>
+        <li>Labelled the waiver directly on the bill amount.</li>
+        <li>Grouped charges so the breakup could be scanned.</li>
+      </ul>
+      <div class="receipt" aria-label="Example overdue bill with late fee waiver">
+        <h4>Overdue bill · with one-time waiver</h4>
+        <div class="row"><span>Plan rental</span><span>₹549.00</span></div>
+        <div class="row"><span>Late fee</span><span class="neg">₹100.00</span></div>
+        <div class="row"><span>Late fee waiver</span><span style="color:var(--credit)">−₹100.00</span></div>
+        <div class="row"><span>GST (18%)</span><span>₹98.82</span></div>
+        <div class="row total"><span>Total outstanding</span><span>₹647.82</span></div>
+        <small>The fee and its reversal stay visible as separate lines, so the customer sees exactly what was waived and why.</small>
+      </div>
+    </div>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="Due scenario."><img src="img/due.jpg" alt="Due scenario screens: home card, services, postpaid page and bill details showing ₹647.82 due in 10 days and the ₹765.82 amount after the due date" loading="lazy"></button>
+      <figcaption><b>Due.</b> "₹647.82 bill is due in 10 days. Pay before 12 Jun to avoid ₹118 late fee." The bill header shows the amount after the due date in place.</figcaption>
+    </div>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="Overdue scenario."><img src="img/overdue.jpg" alt="Overdue scenario screens: overdue home card, a one-time benefit sheet removing the ₹118 late fee, and bill details with the waiver applied" loading="lazy"></button>
+      <figcaption><b>Overdue.</b> The card states the fee is included. Eligible customers see a one-time benefit that removes it, framed as a reward for past on-time payments.</figcaption>
+    </div>
+  </section>
+
+  <!-- DESIGN WIN -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">Design win · Changing the construct</p>
+      <h2>Some confusion can't be fixed with copy. The late fee was billed in the wrong month.</h2>
+    </div>
+    <div class="construct">
+      <div><span class="tag was">Original construct</span><h3>Late fee appears on the next month's bill</h3><p>A customer who paid late in June saw the fee arrive in July's bill, disconnected from the delay that caused it. No label could make that timing feel fair.</p></div>
+      <div><span class="tag now">Proposed construct</span><h3>Charge it when it becomes due</h3><p>Apply the late fee at the moment the bill goes overdue, then show it as already settled on the next invoice. Clearer UI explanations support it at both points.</p></div>
+    </div>
+    <figure>
+      <button class="shot" type="button" data-cap="Late fee bill structure, annotated."><img src="img/slide-09.jpg" alt="Annotated bill details screen: key amount highlighted, charges itemised with late fee in red and waiver in green" loading="lazy"></button>
+      <figcaption><b>The redesigned overdue bill.</b> The key amount leads, every charge and adjustment is itemised, red flags the fee and the delay, and green appears only for a real waiver.</figcaption>
+    </figure>
+  </section>
+
+  <!-- APPROACH 2 -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">Second approach · Estimated bills</p>
+      <h2>From explaining a problem to preparing people for it.</h2>
+      <p>The first approach helped customers after the bill arrived. Then we asked: what if we explained the impact before the bill was generated? Instead of waiting for "Why is my bill so high?", the app answers it in advance.</p>
+    </div>
+    <div class="grid-2">
+      <ul class="ticks col">
+        <li>Introduced estimated bills, starting with a customer's first partial cycle.</li>
+        <li>Showed how many days each charge applied to, e.g. 19–30 May (12 days).</li>
+        <li>Gave context on upcoming charges and what could still change.</li>
+        <li>Moved the experience to the category landing page, next to related actions like AutoPay.</li>
+      </ul>
+      <div class="receipt" aria-label="Example first-bill estimate">
+        <h4>First bill · estimated</h4>
+        <div class="row"><span>Plan rental (19–30 May)</span><span>₹219.60</span></div>
+        <div class="row"><span>GST (18%)</span><span>₹39.52</span></div>
+        <div class="row total"><span>Estimated amount</span><span>₹259.12</span></div>
+        <small>"This is a partial bill for 19–30 May, as per your plan. Final bill may change with additional purchases."</small>
+      </div>
+    </div>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="Second approach: first-bill estimate and due states."><img src="img/approach2.jpg" alt="Estimated bill screens: home card announcing the first bill on 1 Jun, postpaid landing page, estimated bill with key dates, then the due state" loading="lazy"></button>
+      <figcaption><b>Before and after bill generation.</b> The same card evolves from "Your first bill is coming up on 1 Jun" to "₹259.12 bill is due on 3 Jun", with key dates and the 12-day cycle stated.</figcaption>
+    </div>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="Overdue with waiver, monthly estimated bill and charge detail sheets."><img src="img/approach2b.jpg" alt="Overdue state with late fee waiver, a July estimated bill with Added and Removed filters, and bottom sheets for GST and plan rental details" loading="lazy"></button>
+      <figcaption><b>Bill management.</b> A monthly estimate with Added and Removed filters, plus tap-through sheets that break down GST and plan rental.</figcaption>
+    </div>
+  </section>
+
+  <!-- BILL LIFECYCLE -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">The bill, state by state</p>
+      <h2>One consistent story from the first estimate to the paid receipt.</h2>
+      <p>Each billing state answers the question a customer has at that moment, on the home card, the postpaid landing page and the bill itself.</p>
+    </div>
+    <div class="stack">
+      <h3>First bill</h3>
+      <p class="col">When a customer's very first bill is being generated, we show an estimate and explain how it's calculated.</p>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="Home card, postpaid welcome and estimated bill: &quot;Your first bill is coming up on 1 Jun&quot;, with a &quot;How is this amount estimated?&quot; explainer and key dates."><img src="img/firstbill.jpg" alt="First bill screens: home card with estimated amount, postpaid welcome page with billing details, and an estimated bill with breakup and key dates" loading="lazy"></button>
+      <figcaption><b>First bill.</b> Home card, postpaid welcome and estimated bill: "Your first bill is coming up on 1 Jun", with a "How is this amount estimated?" explainer and key dates.</figcaption>
+    </div>
+    </div>
+    <div class="stack">
+      <h3>Bill due</h3>
+      <p class="col">The bill is generated and payment is due. Amount, date and late-fee risk come first, then a grouped breakup.</p>
+    <div class="wall">
+      <button class="shot" type="button" data-cap="Home and postpaid cards state the amount, due date and late fee. Bill detail puts the total first, groups the breakup and links &quot;Review Charges&quot; to roaming. Tapping Plan rental explains a mid-cycle plan change."><img src="img/billdue.jpg" alt="Bill due screens: home card, postpaid home bill card with AutoPay nudge, bill detail with grouped breakup and key dates, and a plan rental details sheet" loading="lazy"></button>
+      <figcaption><b>Bill due.</b> Home and postpaid cards state the amount, due date and late fee. Bill detail puts the total first, groups the breakup and links "Review Charges" to roaming. Tapping Plan rental explains a mid-cycle plan change.</figcaption>
+    </div>
+    </div>
+    <div class="grid-2">
+      <div class="stack">
+        <h3>Bill paid</h3>
+        <p>After payment, the bill confirms what was paid and keeps the breakup and dates for reference.</p>
+        <figure>
+          <button class="shot" type="button" data-cap="Bill paid: amount, transaction date, breakup and key dates."><img src="img/billpaid.jpg" alt="Bill paid screens: postpaid home card showing ₹259.12 paid, and a bill paid page with breakup and key dates" loading="lazy"></button>
+          <figcaption><b>Bill paid.</b> The same breakup and dates stay available, so a paid bill can still be checked.</figcaption>
+        </figure>
+      </div>
+      <div class="stack">
+        <h3>Other cases</h3>
+        <p>Charges that change the bill, and advances adjusted over time, each explained in context.</p>
+        <figure>
+          <button class="shot" type="button" data-cap="Changes this month and Advance &amp; Deposits."><img src="img/othercases.jpg" alt="Changes this month sheets listing a ₹698 Nepal roaming pack and a ₹199 repeat charge, and an Advance and Deposits screen showing ₹2,000 of ₹2,500 left to adjust" loading="lazy"></button>
+          <figcaption><b>Other cases.</b> "Changes this month" shows where roaming was used and which charges repeat. Advances show how much is left and when the next ₹250 will be adjusted.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- EDGE SCENARIOS -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">High-contact scenarios</p>
+      <h2>The same principles, applied to roaming and mid-cycle changes.</h2>
+      <p>Together these account for 32,000 Postpaid contacts a month. Both produce charges that look wrong without context.</p>
+    </div>
+    <figure>
+      <button class="shot" type="button" data-cap="International roaming border charges: prevention."><img src="img/slide-11.jpg" alt="Roaming screens: a prompt to turn off roaming near the border, and an auto-applied one-day pack" loading="lazy"></button>
+      <figcaption><b>Prevent, then protect.</b> Customers in border areas get a prompt to turn off international roaming. If it stays on, a one-day pack is applied automatically to cap the cost.</figcaption>
+    </figure>
+    <figure>
+      <button class="shot" type="button" data-cap="International roaming border charges: communication and waiver."><img src="img/slide-10.jpg" alt="Bill with international roaming charge and a Check for waiver link, an eligibility check, and the bill after the ₹698 waiver" loading="lazy"></button>
+      <figcaption><b>Self-serve reversal.</b> "Check for waiver" sits beside the roaming charge. The app verifies whether the customer crossed the border and removes the charge in-journey, with no call needed.</figcaption>
+    </figure>
+    <figure>
+      <button class="shot" type="button" data-cap="Mid-cycle plan change."><img src="img/slide-12.jpg" alt="Bill details with a plan rental detail sheet prorating ₹549 and ₹649 plans across May" loading="lazy"></button>
+      <figcaption><b>Mid-cycle plan change.</b> Prorated rental looked like a duplicate bill. Tapping Plan rental now shows each plan, its dates and its share: ₹274.50 + ₹324.50 = ₹599.00.</figcaption>
+    </figure>
+  </section>
+
+  <!-- EVOLUTION -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">Before → after</p>
+      <h2>How the experience evolved.</h2>
+    </div>
+    <div class="evo">
+      <figure><h3>From alarming to calming</h3>
+        <button class="shot" type="button" data-cap="From alarming to calming."><img src="img/evo-calm.jpg" alt="Old home screen with red expiry warning beside new home card stating bill due date calmly" loading="lazy"></button>
+        <figcaption>A red "expiring today" alert becomes a dated, factual due card.</figcaption></figure>
+      <figure><h3>From forced action to guidance</h3>
+        <button class="shot" type="button" data-cap="From forced action to guidance."><img src="img/evo-guide.jpg" alt="Old services list with suspension warning beside new postpaid landing page with bill card and AutoPay offer" loading="lazy"></button>
+        <figcaption>A suspension warning becomes a due date, a reason and a helpful next step.</figcaption></figure>
+      <figure><h3>From complicated to simple</h3>
+        <button class="shot" type="button" data-cap="From complicated to simple."><img src="img/evo-simple.jpg" alt="Old dense bill breakup beside new bill with large total, short breakup and key dates" loading="lazy"></button>
+        <figcaption>Nine mixed rows become one total, a short breakup and key dates.</figcaption></figure>
+      <figure><h3>From bill shock to bill management</h3>
+        <button class="shot" type="button" data-cap="From bill shock to bill management."><img src="img/evo-shock.jpg" alt="Old changes-this-month section beside new estimated bill with added and removed charges" loading="lazy"></button>
+        <figcaption>Changes discovered after billing become an estimate customers can review and adjust.</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- IMPACT -->
+  <section class="stack-lg">
+    <div class="section-head col">
+      <p class="eyebrow">Measuring impact</p>
+      <h2>Success is fewer calls, not prettier screens.</h2>
+    </div>
+    <p class="status col"><b>Status:</b> the Q4 2026 target is a 20% reduction in billing support contacts, within a 40% programme ambition. These are targets. Post-launch results will be added once the measurement period closes.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Outcome</th><th>Signal</th><th>Baseline</th></tr></thead>
+        <tbody>
+          <tr><td>Fewer billing contacts</td><td>Monthly billing interactions, pre vs post launch</td><td class="num">~4,50,000 / month</td></tr>
+          <tr><td>Fewer late-fee queries</td><td>Postpaid late-fee contacts</td><td class="num">60,000 / month</td></tr>
+          <tr><td>Fewer roaming disputes</td><td>Roaming contacts, incl. border cases</td><td class="num">14,000 / month</td></tr>
+          <tr><td>Better self-service</td><td>In-app waiver and dispute completions; repeat contacts for the same bill</td><td>To be set at launch</td></tr>
+          <tr><td>Better comprehension</td><td>Usability tests on reading the total, changes and charge reasons</td><td>To be set at launch</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- REFLECTION -->
+  <section class="stack col">
+    <p class="eyebrow">Reflection</p>
+    <h2>Billing clarity is an end-to-end product capability.</h2>
+    <p>The bill screen was only one moment. Clarity had to hold across the nudge that announces a change, the card that leads to the bill, the hierarchy that reconciles the amount, and the actions that resolve a concern in place.</p>
+    <p>The biggest lesson was knowing when to stop writing. When the late fee was billed in the wrong month, better copy would only have explained a bad rule. Changing the rule made the explanation unnecessary.</p>
+    <div class="stack" style="gap:10px;margin-top:8px">
+      <p class="flowlabel">Before</p>
+      <div class="flow before"><span>Sees bill</span><i>→</i><span>Gets confused</span><i>→</i><span>Contacts support</span><i>→</i><span>Support explains</span></div>
+      <p class="flowlabel" style="margin-top:8px">After</p>
+      <div class="flow after"><span>Airtel explains the change</span><i>→</i><span>Customer understands</span><i>→</i><span>Resolves it in-app if needed</span></div>
+    </div>
+  </section>
+
+</main>
+
+<dialog id="lb" aria-label="Enlarged image">
+  <button type="button" id="lbclose">Close</button>
+  <img id="lbimg" alt="">
+  <p id="lbcap"></p>
+</dialog>
+
+<script>
+(function(){
+  var d=document.getElementById('lb'),im=document.getElementById('lbimg'),cap=document.getElementById('lbcap');
+  document.querySelectorAll('.shot').forEach(function(b){
+    b.addEventListener('click',function(){
+      var i=b.querySelector('img'); im.src=i.src; im.alt=i.alt; cap.textContent=b.dataset.cap||'';
+      if(d.showModal) d.showModal();
+    });
+  });
+  document.getElementById('lbclose').addEventListener('click',function(){d.close()});
+  d.addEventListener('click',function(e){ if(e.target===d) d.close(); });
+})();
+</script>
+
+</body></html>
