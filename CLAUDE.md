@@ -104,6 +104,20 @@ These were made directly in the deployed `index.html` and have been ported into 
 - Engage X screen notes without the crossed-out original copy (`hideFrom: true`).
 - Projects intro: "...a self-service redesign, AI navigation and a lending journey."
 
+## On-site case studies (14 Nov 2026)
+
+Every Figma link has been removed. The case studies that lived in Figma are now pages on the site, copied word for word from Ridhi's exported frames (`src/data/docs/*.ts`, rendered by `src/components/DocStudy.tsx`):
+- Help Home (Frame 10)
+- AMA & NBA (AI-Powered Navigation Design)
+- Airtel Finance: Part 1 = Frame 1(3), Part 2 = Frame 2 (kept separate, not merged)
+- Chatbot: Part 1 = Frame 3, Part 2 = Frame 4
+- Payments Bank & UPI ("Est impact" figures as in source)
+- Call Manager
+- UX Content Principles (checklist + 11 principles)
+- Brand & marketing (every deck slide, plus the YouTube / magazine / brochure links)
+
+Screens are cropped by `scripts/crop-doc-images.py` into `assets/docs/` and embedded by `scripts/gen-doc-images.py`. AMA/NBA are expanded on first mention only.
+
 ## Rules
 
 - **Never invent facts or metrics.** Keep personal, team and product results, and targets, separate. Every result shows its scope.
